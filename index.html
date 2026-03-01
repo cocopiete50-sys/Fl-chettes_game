@@ -5,6 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DART ZONE</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DART ZONE">
+<meta name="theme-color" content="#060610">
+<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
@@ -751,6 +756,19 @@ WIN
 /* ══ USER STATE ══ */
 var USER={email:'',avatar:'🎯',name:'Joueur',gamesPlayed:0};
 
+/* ══ LOCALSTORAGE ══ */
+function saveUser(){try{localStorage.setItem('dz_user',JSON.stringify(USER));}catch(e){}}
+function loadSavedUser(){try{var u=JSON.parse(localStorage.getItem('dz_user'));if(u&&u.name&&u.avatar){USER=u;return true;}}catch(e){}return false;}
+function savePref(k,v){try{localStorage.setItem('dz_pref_'+k,v);}catch(e){}}
+function loadPref(k,def){try{var v=localStorage.getItem('dz_pref_'+k);return v!==null?v:def;}catch(e){return def;}}
+/* ══ PWA MANIFEST ══ */
+(function(){try{
+  var m={name:'DART ZONE',short_name:'DART ZONE',description:'Le jeu de fléchettes premium',start_url:location.href,display:'standalone',background_color:'#060610',theme_color:'#060610',orientation:'portrait-primary',
+  icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23060610'/%3E%3Ctext y='370' x='256' text-anchor='middle' font-size='340'%3E%F0%9F%8E%AF%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+  var b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);
+}catch(e){}})();
+
 /* ══ THEMES ══ */
 var TH={rouge:{a:'#e8192c',l:'#ff6070',d:'#c0001a',r:'232,25,44'},bleu:{a:'#00d4ff',l:'#66e8ff',d:'#0099bb',r:'0,212,255'},violet:{a:'#a855f7',l:'#d08aff',d:'#7c22d4',r:'168,85,247'},vert:{a:'#2dc653',l:'#60e888',d:'#1a8a36',r:'45,198,83'},or:{a:'#f5a818',l:'#ffc840',d:'#c47800',r:'245,168,24'}};
 var curTheme=TH.rouge;
@@ -1257,6 +1275,7 @@ document.getElementById('psave').addEventListener('click',function(){
   toast('✅ Profil sauvegardé !','#1a6e35');
 });
 document.getElementById('plogout').addEventListener('click',function(){
+  try{localStorage.removeItem('dz_user');localStorage.removeItem('dz_pref_theme');}catch(e){}
   USER={email:'',avatar:'🎯',name:'Joueur',gamesPlayed:0};
   document.getElementById('land-email').value='';
   document.getElementById('land-pass').value='';
@@ -1289,6 +1308,53 @@ function confetti(){var cv=document.getElementById('confetti-cv');cv.width=windo
 
 /* ══ PARTICLES ══ */
 function spawnParts(cx,cy,type){var col=type==='t'?'#e8192c':type==='d'?'#f5c518':(type==='bull50'||type==='bull25')?'#2dc653':type==='miss'?'#4e4e72':'#00d4ff';var count=type==='miss'?4:type==='bull50'?16:10;for(var pi=0;pi<count;pi++){var el=document.createElement('div');var a=(pi/count)*Math.PI*2+Math.random()*.5,sp=18+Math.random()*28,sz=type==='bull50'?4+Math.random()*6:2+Math.random()*4;el.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+';pointer-events:none;z-index:5000;transform:translate(-50%,-50%);transition:transform .5s cubic-bezier(.18,.89,.32,1.28),opacity .45s;will-change:transform,opacity;';document.body.appendChild(el);(function(e,aa,ss){setTimeout(function(){e.style.transform='translate(calc(-50% + '+Math.cos(aa)*ss+'px),calc(-50% + '+Math.sin(aa)*ss+'px)) scale(0.1)';e.style.opacity='0';},20);})(el,a,sp);setTimeout((function(e){return function(){e.remove();};})(el),560);}}
+
+/* ══ APPLE LIQUID PRESS ══ */
+(function(){
+  var SEL='.land-btn,.start-btn,.gd-play-btn,.new-game-btn,.ab-btn,.hub-feat,.gc,.mc,.av-item,.hub-cat,.tdot,.prof-av-mini,#psave,#plogout,#prof-back-btn,.gd-back-btn,.setup-back,.hub-user,.ec,.dpt-ctrl,.add-p-btn,.tb-menu,#av-continue-btn,.p-del,.hub-stat';
+  function apply(el){
+    if(el.dataset.lq)return;el.dataset.lq='1';
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    el.style.overflow='hidden';
+    var dot=document.createElement('span');
+    dot.style.cssText='position:absolute;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 65%);pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .35s ease;z-index:999;left:50%;top:50%;will-change:opacity,left,top;';
+    el.appendChild(dot);
+    function xy(e){var r=el.getBoundingClientRect(),t=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0])||e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+    function down(e){var p=xy(e);dot.style.left=p.x+'px';dot.style.top=p.y+'px';dot.style.transition='opacity .15s ease';dot.style.opacity='1';el.style.transform='scale(0.94)';el.style.transition='transform .12s cubic-bezier(.2,.8,.3,1.3)';}
+    function mv(e){if(dot.style.opacity==='0')return;var p=xy(e);dot.style.left=p.x+'px';dot.style.top=p.y+'px';}
+    function up(){dot.style.transition='opacity .4s ease';dot.style.opacity='0';el.style.transform='scale(1)';el.style.transition='transform .55s cubic-bezier(.34,1.56,.64,1)';}
+    el.addEventListener('mousedown',down);el.addEventListener('mousemove',mv);el.addEventListener('mouseup',up);el.addEventListener('mouseleave',up);
+    el.addEventListener('touchstart',down,{passive:true});el.addEventListener('touchmove',mv,{passive:true});el.addEventListener('touchend',up,{passive:true});el.addEventListener('touchcancel',up,{passive:true});
+  }
+  function init(){document.querySelectorAll(SEL).forEach(apply);}
+  init();
+  new MutationObserver(init).observe(document.body,{childList:true,subtree:true});
+})();
+/* ══ END LIQUID ══ */
+
+/* ══ PERSISTENCE HOOKS ══ */
+// Sauvegarder au clic SAUVEGARDER profil
+document.getElementById('psave').addEventListener('click',function(){saveUser();});
+// Sauvegarder après choix avatar
+document.getElementById('av-continue-btn').addEventListener('click',function(){setTimeout(saveUser,80);});
+// Sauvegarder le thème choisi
+document.querySelectorAll('.tdot').forEach(function(d){
+  d.addEventListener('click',function(){savePref('theme',d.dataset.t);});
+});
+/* ══ AUTO-LOGIN ══ */
+(function(){
+  if(!loadSavedUser())return;
+  var t=loadPref('theme','rouge');
+  document.getElementById('hub-av-icon').textContent=USER.avatar;
+  document.getElementById('hub-uname').textContent=USER.name;
+  buildHub();
+  applyTheme(t);
+  document.querySelectorAll('.tdot').forEach(function(d){
+    d.classList.toggle('on',d.dataset.t===t);
+  });
+  showScreen('hub');
+  toast('👋 Bon retour '+USER.name+' !','#1a6e35');
+})();
 
 /* ══ TOAST ══ */
 function toast(msg,bg){var t=document.getElementById('toast');t.textContent=msg;t.style.background=bg||'#333';t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2200);}
