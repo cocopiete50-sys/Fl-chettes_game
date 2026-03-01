@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+::-webkit-scrollbar{display:none;}
+html{-webkit-overflow-scrolling:touch;scrollbar-width:none;overflow-x:hidden;}
 :root{
   --bg:#060610;--accent:#e8192c;--accent-l:#ff6070;--accent-d:#c0001a;
   --gold:#f5c518;--green:#2dc653;--cyan:#00d4ff;--red:#e8192c;
@@ -203,6 +205,21 @@ box-shadow:0 6px 24px rgba(245,197,24,.3);
 .sb-row{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.03);position:relative;}
 .sb-row.act{background:rgba(245,197,24,.04);}
 .sb-row.act::before{content:’’;position:absolute;left:0;top:10%;bottom:10%;width:3px;background:linear-gradient(180deg,rgba(245,197,24,.9),rgba(245,197,24,.15));border-radius:0 3px 3px 0;}
+
+/* ── BADGE TOUR ACTIF ── */
+.turn-badge{
+display:inline-flex;align-items:center;gap:6px;
+padding:5px 12px 5px 8px;border-radius:20px;
+background:rgba(245,197,24,.12);
+border:1px solid rgba(245,197,24,.35);
+font-family:‘Rajdhani’,‘Segoe UI’,sans-serif;font-weight:700;font-size:.62rem;letter-spacing:.1em;
+color:#f5c518;
+animation:tbpulse 1.6s ease-in-out infinite;
+white-space:nowrap;
+}
+.turn-badge-dot{width:7px;height:7px;border-radius:50%;background:#f5c518;box-shadow:0 0 6px #f5c518;animation:tbdot 1.6s ease-in-out infinite;}
+@keyframes tbpulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,24,.25);}50%{box-shadow:0 0 0 5px rgba(245,197,24,0);}}
+@keyframes tbdot{0%,100%{opacity:1;}50%{opacity:.4;}}
 .sb-r-top{display:flex;align-items:center;justify-content:space-between;}
 .sb-nm{font-family:‘Bebas Neue’,Impact,sans-serif;font-size:1.05rem;display:flex;align-items:center;gap:6px;}
 .sb-sc{font-family:‘Bebas Neue’,Impact,sans-serif;font-size:1.55rem;color:#f5c518;}
@@ -741,10 +758,11 @@ function renderSB(){
     var avg=p.volees.length?(p.volees.reduce(function(a,b){return a+b;},0)/p.volees.length).toFixed(1):'—';
     var prog=Math.max(0,Math.min(100,(1-p.score/CFG.start)*100));
     var bust=p.lastBust&&!isA?'<span class="bust-tag">BUST!</span>':'';
+    var tourBadge=isA?'<span class="turn-badge"><span class="turn-badge-dot"></span>TON TOUR</span> ':'';
     var row=document.createElement('div');row.className='sb-row'+(isA?' act':'');
     row.innerHTML='<div class="sb-r-top"><div class="sb-nm"><span>'+(isA?'🎯':'👤')+'</span>'+p.name+'</div>'
       +'<div class="sb-sc'+(p.lastBust&&!isA?' red':'')+'">'+p.score+'</div></div>'
-      +'<div class="sb-stats">'+bust+p.manches+' manche'+(p.manches!==1?'s':'')+' · '+p.darts+' fléchettes · moy '+avg+'pts'
+      +'<div class="sb-stats">'+tourBadge+bust+p.manches+' manche'+(p.manches!==1?'s':'')+' · '+p.darts+' fléchettes · moy '+avg+'pts'
       +(p.busts?'<span style="color:#e8192c"> · '+p.busts+' bust'+(p.busts>1?'s':'')+'</span>':'')+'</div>'
       +'<div class="sb-prog"><div class="sb-prog-fill" style="width:'+prog+'%"></div></div>';
     sb.appendChild(row);
