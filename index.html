@@ -845,7 +845,7 @@ var GAMES=[
   {emoji:'🏎️',name:'Speed Race',sub:'Course',color:'#e8192c'},
   {emoji:'⛳',name:'Golf Pro',sub:'Sport',color:'#2dc653'},
   {emoji:'🎸',name:'Beat Music',sub:'Rythme',color:'#a855f7'},
-  {emoji:'👾',name:'Pixel Run',sub:'Arcade',color:'#00d4ff'},
+  {emoji:'👾',name:'Pixel Run',sub:'Arcade',color:'#00d4ff',playable:true,isNew:true,url:'https://bestclipsfr00-coder.github.io/Site-Riad-/'},
   {emoji:'🏆',name:'Champions',sub:'Tournoi',color:'#f5c518'},
 ];
 var HUB_COLORS=['#1a0a1a','#0a1a0a','#1a0f0a','#1a0a0f','#0a0a1a','#1a1a0a'];
@@ -860,8 +860,9 @@ function buildHub(){
       +newBadge+'<span>'+gm.emoji+'</span>'+overlay+'</div>'
       +'<div class="gc-name">'+gm.name+'</div>';
     d.addEventListener('click',function(){
-      if(gm.playable)showScreen('game-detail');
-      else toast('🔒 '+gm.name+' bientôt disponible !','#333');
+      if(gm.url){ window.location.href=gm.url; }
+      else if(gm.playable){ showScreen('game-detail'); }
+      else{ toast('🔒 '+gm.name+' bientôt disponible !','#333'); }
     });
     grid.appendChild(d);
   });
