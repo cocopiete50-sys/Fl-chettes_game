@@ -533,10 +533,16 @@ function sizeBoardElements(){
   /* rings */
   var r1=document.getElementById('board-ring1');
   r1.style.width=(sz+16)+'px';r1.style.height=(sz+16)+'px';
-  r1.style.left='50%';r1.style.top='50%';r1.style.transform='translateX(-50%) translateY(-50%)';r1.style.position='absolute';
+  r1.style.position='absolute';
+  r1.style.top='50%';r1.style.left='50%';
+  r1.style.marginTop='-'+((sz+16)/2)+'px';r1.style.marginLeft='-'+((sz+16)/2)+'px';
+  r1.style.transform='none';
   var r2=document.getElementById('board-ring2');
   r2.style.width=(sz+30)+'px';r2.style.height=(sz+30)+'px';
-  r2.style.left='50%';r2.style.top='50%';r2.style.transform='translateX(-50%) translateY(-50%)';r2.style.position='absolute';
+  r2.style.position='absolute';
+  r2.style.top='50%';r2.style.left='50%';
+  r2.style.marginTop='-'+((sz+30)/2)+'px';r2.style.marginLeft='-'+((sz+30)/2)+'px';
+  r2.style.transform='none';
 }
 window.addEventListener('resize',function(){if(!document.getElementById('game').classList.contains('off'))sizeBoardElements();});
 
