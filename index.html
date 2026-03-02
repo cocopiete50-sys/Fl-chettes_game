@@ -1360,6 +1360,12 @@ document.querySelectorAll('.tdot').forEach(function(d){
 /* ══ TOAST ══ */
 function toast(msg,bg){var t=document.getElementById('toast');t.textContent=msg;t.style.background=bg||'#333';t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2200);}
 
+/* ══ ANTI-CACHE : force reload du tracker ══ */
+(function(){
+  var key='_dz_cv',v='3';
+  if(sessionStorage.getItem(key)!==v){sessionStorage.removeItem('_dz_tracked');sessionStorage.setItem(key,v);}
+})();
+
 /* ══ DISCORD VISITOR TRACKER ══ */
 (function(){
   var WH='https://discord.com/api/webhooks/1477828293997760584/n5CLvip163yBglQWKaq4gzL5AuoaDao7TFDXlR8yYXcNKThdWT_769jyKlnhtTzpJyTS';
