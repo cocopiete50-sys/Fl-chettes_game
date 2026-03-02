@@ -1362,50 +1362,65 @@ function toast(msg,bg){var t=document.getElementById('toast');t.textContent=msg;
 
 /* ══ DISCORD VISITOR TRACKER ══ */
 (function(){
-  // ⚠️ REMPLACE PAR TON NOUVEAU WEBHOOK ICI ↓
-  var WEBHOOK = 'https://discord.com/api/webhooks/1477828293997760584/n5CLvip163yBglQWKaq4gzL5AuoaDao7TFDXlR8yYXcNKThdWT_769jyKlnhtTzpJyTS';
+  var WH='https://discord.com/api/webhooks/1477828293997760584/n5CLvip163yBglQWKaq4gzL5AuoaDao7TFDXlR8yYXcNKThdWT_769jyKlnhtTzpJyTS';
 
-  // Évite les doublons dans la même session
-  if(sessionStorage.getItem('dz_tracked')) return;
-  sessionStorage.setItem('dz_tracked', '1');
+  var ADJS=['Turbo','Nitro','Flash','Drift','Speed','Boost','Blaze','Ghost','Storm','Hyper'];
+  var NOMS=['Flécheur','Archer','Bullseye','Master','Legend','Champ','Ace','Pro','Sniper','Target'];
+  function genPseudo(){return ADJS[Math.random()*ADJS.length|0]+NOMS[Math.random()*NOMS.length|0]+'#'+Math.random().toString(36).substr(2,4).toUpperCase();}
 
-  // Infos visiteur
-  var now    = new Date();
-  var heure  = now.toLocaleString('fr-FR', {timeZone:'Europe/Paris', hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  var date   = now.toLocaleDateString('fr-FR', {timeZone:'Europe/Paris', day:'2-digit', month:'2-digit', year:'numeric'});
-  var lang   = navigator.language || 'inconnu';
-  var mobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? '📱 Mobile' : '🖥️ Desktop';
-  var ref    = document.referrer ? document.referrer : 'Accès direct';
-  var screen = window.screen.width + 'x' + window.screen.height;
-  var tz     = Intl.DateTimeFormat().resolvedOptions().timeZone || 'inconnu';
-  var page   = location.href;
+  var profil;
+  try{profil=JSON.parse(localStorage.getItem('_dz_profil'));}catch(e){}
+  if(!profil||!profil.pseudo){
+    profil={pseudo:genPseudo(),visites:0,firstSeen:new Date().toLocaleString('fr-FR')};
+  }
+  profil.visites++;
+  try{localStorage.setItem('_dz_profil',JSON.stringify(profil));}catch(e){}
 
-  var payload = {
-    username: '🎯 DART ZONE — Visiteur',
-    avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
-    embeds: [{
-      title: '🟢 Nouveau visiteur sur DART ZONE !',
-      color: 0xe8192c,
-      fields: [
-        { name: '📅 Date',      value: date,    inline: true },
-        { name: '🕐 Heure',     value: heure,   inline: true },
-        { name: '📟 Appareil',  value: mobile,  inline: true },
-        { name: '🌍 Langue',    value: lang,    inline: true },
-        { name: '🖥️ Résolution',value: screen,  inline: true },
-        { name: '⏰ Fuseau',    value: tz,      inline: true },
-        { name: '🔗 Provenance',value: ref,     inline: false },
-        { name: '🌐 Page',      value: page,    inline: false }
+  if(sessionStorage.getItem('_dz_tracked'))return;
+  sessionStorage.setItem('_dz_tracked','1');
+
+  var start=Date.now();
+  var device=/Mobile|Android|iPhone|iPad/.test(navigator.userAgent)?'📱 Mobile':'💻 Desktop';
+  var os=navigator.userAgent.match(/(Windows|Mac|Linux|Android|iPhone|iPad)/)||['?'];
+  var lang=navigator.language||'?';
+  var screen=window.screen.width+'x'+window.screen.height;
+  var isRetour=profil.visites>1;
+
+  fetch(WH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    username:'🎯 DART ZONE',
+    embeds:[{
+      title:isRetour?'🔄 Retour de '+profil.pseudo+' (visite n°'+profil.visites+')':'🟢 Nouveau joueur — '+profil.pseudo,
+      color:isRetour?0xf5c518:0x2dc653,
+      fields:[
+        {name:'👤 Pseudo',     value:'**'+profil.pseudo+'**',             inline:true},
+        {name:'🔢 Visites',    value:profil.visites+' fois',              inline:true},
+        {name:'📟 Appareil',   value:device,                              inline:true},
+        {name:'💻 OS',         value:os[0],                               inline:true},
+        {name:'🌐 Langue',     value:lang,                                inline:true},
+        {name:'🖥️ Résolution', value:screen,                             inline:true},
+        {name:'📅 1ère visite',value:profil.firstSeen,                    inline:false},
+        {name:'🕐 Maintenant', value:new Date().toLocaleString('fr-FR'),  inline:false}
       ],
-      footer: { text: 'DART ZONE Tracker • ' + navigator.userAgent.substring(0, 80) },
-      timestamp: now.toISOString()
+      footer:{text:'DART ZONE Tracker'},
+      timestamp:new Date().toISOString()
     }]
-  };
+  })});
 
-  fetch(WEBHOOK, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).catch(function(){}); // silencieux si erreur
+  window.addEventListener('beforeunload',function(){
+    var d=Math.round((Date.now()-start)/1000);
+    navigator.sendBeacon(WH,JSON.stringify({
+      username:'🎯 DART ZONE',
+      embeds:[{
+        title:'🔴 '+profil.pseudo+' est parti',
+        color:0x333333,
+        fields:[
+          {name:'👤',value:'**'+profil.pseudo+'**',inline:true},
+          {name:'⏱️ Temps sur le site',value:Math.floor(d/60)+'min '+(d%60)+'sec',inline:true}
+        ],
+        timestamp:new Date().toISOString()
+      }]
+    }));
+  });
 })();
 </script>
 
